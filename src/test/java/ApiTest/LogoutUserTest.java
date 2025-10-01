@@ -30,9 +30,9 @@ public class LogoutUserTest {
     @Test
     @Description("Успешное авторизация пользователем")
     public void createdUser() {
-       String email = UserTestData.generateUniqueEmail();
-       String password = UserTestData.generateUniquePassword();
-       String name = UserTestData.generateUniqueName();
+       String email = UserTestData.Utils.generateUniqueEmail();
+       String password = UserTestData.Utils.generateUniquePassword();
+       String name = UserTestData.Utils.generateUniqueName();
 
         String bodyCreated = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
                 email, password, name);

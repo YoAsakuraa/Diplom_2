@@ -13,7 +13,7 @@ public class CreatingUserSteps {
     @Step("Создание пользователя")
     public Response createUserSuccessful(String body) {
         if (body == null) {
-            body = UserTestData.generateUniqueBody();
+            body = UserTestData.CreatedUserData.generateUniqueBodyCreatedUser();
         }
         return given()
                 .contentType(ContentType.JSON)
@@ -36,7 +36,7 @@ public class CreatingUserSteps {
 
     @Step("Создание уже зарегистрированного пользователя")
     public Response createDuplicateUser() {
-        String body = UserTestData.generateUniqueBody();
+        String body = UserTestData.CreatedUserData.generateUniqueBodyCreatedUser();
          given()
                 .contentType(ContentType.JSON)
                 .body(body)

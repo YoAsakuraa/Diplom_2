@@ -20,11 +20,6 @@ public class CreatingUserTest {
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
 
 
-    private String createdUserLogin;
-    private String createdUserPassword;
-    private String createdUserName;
-
-
     @BeforeEach
     public void setUp() {
 
@@ -39,24 +34,24 @@ public class CreatingUserTest {
     static Stream<Arguments> userDataProvider() {
         return Stream.of(
                 // Комбинация 1: Все поля
-                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.generateUniquePassword(), UserTestData.generateUniqueName() , 200 , true),
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName() , 200 , true),
 
                 // Комбинация 2: Без email
-                Arguments.of(UserTestData.getNull(), UserTestData.generateUniquePassword(), UserTestData.generateUniqueName(),   200 , false),
+                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName(),   200 , false),
 
                 // Комбинация 3: Без password
-                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.getNull(), UserTestData.generateUniqueName(),   200 , false),
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(),   200 , false),
 
                 // Комбинация 4: Без name
-                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.generateUniquePassword(), UserTestData.getNull(),   200 , false),
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(),   200 , false),
 
                 // Комбинация 5: Только email
-                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.getNull(), UserTestData.getNull(),   200 , false),
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.getNull(),   200 , false),
 
                 // Комбинация 6: Только password
-                Arguments.of(UserTestData.getNull(), UserTestData.generateUniquePassword(), UserTestData.getNull(),  200 , false),
+                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(),  200 , false),
                 // Комбинация 6: Только name
-                Arguments.of(UserTestData.getNull(), UserTestData.getNull(), UserTestData.generateUniqueName(),   200, false)
+                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(),   200, false)
         );
     }
 
@@ -98,7 +93,7 @@ public class CreatingUserTest {
     @Test
     @Description("Создание пользователя без Email")
     public void createdUserWithoutEmail() {
-        String body = UserTestData.generateBodyWithoutEmail();
+        String body = UserTestData.CreatedUserData.generateBodyWithoutEmailCreatedUser();
         Response response = creatingUserSteps.createUserSuccessful(body);
         validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
 
@@ -107,7 +102,7 @@ public class CreatingUserTest {
     @Test
     @Description("Создание пользователя без Password")
     public void createdUserWithoutPassword() {
-        String body = UserTestData.generateBodyWithoutPassword();
+        String body = UserTestData.CreatedUserData.generateBodyWithoutPasswordCreatedUser();
         Response response = creatingUserSteps.createUserSuccessful(body);
         validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
 
@@ -116,7 +111,7 @@ public class CreatingUserTest {
     @Test
     @Description("Создание пользователя без Name")
     public void createdUserWithoutName() {
-        String body = UserTestData.generateBodyWithoutName();
+        String body = UserTestData.CreatedUserData.generateBodyWithoutNameCreatedUser();
         Response response = creatingUserSteps.createUserSuccessful(body);
         validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
 
