@@ -1,0 +1,125 @@
+package ApiTest;
+
+import io.qameta.allure.Description;
+import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import steps.CreatingUserSteps;
+import steps.ValidationResponseSteps;
+import testData.UserTestData;
+
+import java.util.stream.Stream;
+
+public class CreatingUserTest {
+    CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
+    ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
+
+
+    private String createdUserLogin;
+    private String createdUserPassword;
+    private String createdUserName;
+
+
+    @BeforeEach
+    public void setUp() {
+
+        RestAssured.baseURI = "https://stellarburgers.nomoreparties.site";
+        RestAssured.config = RestAssured.config()
+                .httpClient(HttpClientConfig.httpClientConfig()
+                        .setParam("http.connection.timeout", 10000)
+                        .setParam("http.socket.timeout", 10000)
+                );
+    }
+
+    static Stream<Arguments> userDataProvider() {
+        return Stream.of(
+                // Комбинация 1: Все поля
+                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.generateUniquePassword(), UserTestData.generateUniqueName() , 200 , true),
+
+                // Комбинация 2: Без email
+                Arguments.of(UserTestData.getNull(), UserTestData.generateUniquePassword(), UserTestData.generateUniqueName(),   200 , false),
+
+                // Комбинация 3: Без password
+                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.getNull(), UserTestData.generateUniqueName(),   200 , false),
+
+                // Комбинация 4: Без name
+                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.generateUniquePassword(), UserTestData.getNull(),   200 , false),
+
+                // Комбинация 5: Только email
+                Arguments.of(UserTestData.generateUniqueEmail(), UserTestData.getNull(), UserTestData.getNull(),   200 , false),
+
+                // Комбинация 6: Только password
+                Arguments.of(UserTestData.getNull(), UserTestData.generateUniquePassword(), UserTestData.getNull(),  200 , false),
+                // Комбинация 6: Только name
+                Arguments.of(UserTestData.getNull(), UserTestData.getNull(), UserTestData.generateUniqueName(),   200, false)
+        );
+    }
+
+    @Test
+    @Description("Успешное создание пользователя")
+    public void createdUser() {
+        Response response = creatingUserSteps.createUserSuccessful();
+         /**
+         * ПРИМЕЧАНИЕ: В документации API отсутствует описание формата успешного ответа.
+         * Проверяем статус 201 (Created) и наличие флага "success": true,
+         * исходя из:
+         * 1. Стандартного поведения REST API при создании сущности
+         * 2. Ожиданий бизнес-логики приложения
+         * 3. Анализа фактических ответов сервера в различных сценариях
+         */
+        validationResponseSteps.verifyUserCreatedSuccessfully(response);
+
+    }
+
+    @Test
+    @Description("Создание уже зарегистрированного пользователя")
+    public void createdDuplicationUser() {
+        Response response = creatingUserSteps.createDuplicateUser();
+        validationResponseSteps.verifyThatCreatingDuplicateUserFails(response);
+    }
+
+    @ParameterizedTest
+    @MethodSource("userDataProvider")
+    @Description("Создание заказа с различными данными")
+    public void createOrderWithDifferentData(String email, String password, String name , Integer statusCode , Boolean expectation) {
+        String body = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
+                email, password, name);
+
+        Response response = creatingUserSteps.createUserSuccessful(body);
+        validationResponseSteps.verifyCreateUser(response, statusCode , expectation);
+
+    }
+
+    @Test
+    @Description("Создание пользователя без Email")
+    public void createdUserWithoutEmail() {
+        String body = UserTestData.generateBodyWithoutEmail();
+        Response response = creatingUserSteps.createUserSuccessful(body);
+        validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
+
+    }
+
+    @Test
+    @Description("Создание пользователя без Password")
+    public void createdUserWithoutPassword() {
+        String body = UserTestData.generateBodyWithoutPassword();
+        Response response = creatingUserSteps.createUserSuccessful(body);
+        validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
+
+    }
+
+    @Test
+    @Description("Создание пользователя без Name")
+    public void createdUserWithoutName() {
+        String body = UserTestData.generateBodyWithoutName();
+        Response response = creatingUserSteps.createUserSuccessful(body);
+        validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
+
+    }
+
+}
