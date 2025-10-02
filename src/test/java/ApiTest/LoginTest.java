@@ -7,13 +7,13 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import steps.CreatingUserSteps;
-import steps.LogoutUserSteps;
+import steps.LoginSteps;
 import steps.ValidationResponseSteps;
 import testData.UserTestData;
 
-public class LogoutUserTest {
+public class LoginTest {
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
-    LogoutUserSteps logoutUserSteps = new LogoutUserSteps();
+    LoginSteps logoutUserSteps = new LoginSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
 
     @BeforeEach
@@ -28,22 +28,19 @@ public class LogoutUserTest {
     }
 
     @Test
-    @Description("Успешное авторизация пользователем")
-    public void createdUser() {
+    @Description("Успешный логин пользователем")
+    public void loginUser() {
        String email = UserTestData.Utils.generateUniqueEmail();
        String password = UserTestData.Utils.generateUniquePassword();
        String name = UserTestData.Utils.generateUniqueName();
 
-        String bodyCreated = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
-                email, password, name);
-        String bodyAutorization = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
-                email, password, name);
+        String bodyCreated = UserTestData.Utils.generateCustomBody(email,password,name);
+        String bodyAuthorization = UserTestData.Utils.generateCustomBody(email,password,name);
 
        Response response = creatingUserSteps.createUserSuccessful(bodyCreated);
        validationResponseSteps.verifyUserCreatedSuccessfully(response);
 
-       Response responseAuthorization = logoutUserSteps.UserAuthorizationSuccessful(bodyAutorization);
-       validationResponseSteps.UserAuthorizationSuccessful(responseAuthorization);
-
+       Response responseAuthorization = logoutUserSteps.UserLogoutSuccessful(bodyAuthorization);
+       validationResponseSteps.validateSuccessResponse(responseAuthorization);
     }
 }

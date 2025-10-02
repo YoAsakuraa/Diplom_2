@@ -1,9 +1,7 @@
 package steps;
 
 import io.qameta.allure.Step;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import testData.UserTestData;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -16,6 +14,7 @@ public class ValidationResponseSteps {
         response.then()
                 .statusCode(200)
                 .body("success", equalTo(true));
+        System.out.println("Пользователь успешно создан");
     }
 
 
@@ -40,7 +39,7 @@ public class ValidationResponseSteps {
         if (expectation == true) {
             response.then()
                     .statusCode(expectedStatusCode)
-                    .body("success",equalTo(true));
+                    .body("success", equalTo(true));
         } else {
             response.then()
                     .statusCode(not(200));
@@ -48,11 +47,48 @@ public class ValidationResponseSteps {
 
     }
 
-    @Step("Проверить авторизацию пользователя")
-    public void UserAuthorizationSuccessful(Response response) {
+    @Step("Валидация успешного ответа")
+    public void validateSuccessResponse(Response response) {
         response.then()
                 .statusCode(200)
                 .body("success", equalTo(true));
+
     }
 
+    @Step("Валидация ошибочного при авторизации ответа")
+    public void validateErrorResponseAuthorization(Response response) {
+        response.then()
+                .statusCode(401)
+                .body("success", equalTo(false))
+                .body("message", equalTo("email or password are incorrect"));
+    }
+
+
+    @Step("Проверка что email изменился")
+    public void validateEmailChanged(Response response, String oldEmail) {
+        response.then().statusCode(200).body("user.email", not(equalTo(oldEmail)));
+        System.out.println("📧 Email изменен. Старый: " + oldEmail);
+    }
+
+    @Step("Проверка что имя изменилось")
+    public void validateNameChanged(Response response, String oldName) {
+        response.then().body("user.name", not(equalTo(oldName)));
+        System.out.println("👤 Имя изменено. Старое: " + oldName);
+    }
+
+    @Step("Проверка что email и имя изменились")
+    public void validateEmailAndNameChanged(Response response, String oldEmail, String oldName) {
+        response.then().body("user.email", not(equalTo(oldEmail)))
+                .body("user.name", not(equalTo(oldName)));
+        System.out.println("📧 Email изменен. Старый: " + oldEmail);
+        System.out.println("👤 Имя изменено. Старое: " + oldName);
+    }
+
+    @Step("Проверка изменение данных без авторизации")
+    public void validateDataNotAuthorization(Response response) {
+        response.then().statusCode(401)
+                .body("success", equalTo(false))
+                .body("message", equalTo("You should be authorised"));
+        System.out.println("Ошибка обновления пользователя , отсутствует авторизация ");
+    }
 }

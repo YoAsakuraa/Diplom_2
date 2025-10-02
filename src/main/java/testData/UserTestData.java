@@ -6,49 +6,60 @@ import com.github.javafaker.Faker;
 
 public class UserTestData {
     private static final Faker faker = new Faker(new Locale("eu"));
-    private static String lastEmail;
-    private static String lastPassword;
-    private static String lastName;
+    private static String email;
+    private static String password;
+    private static String name;
 
 
     public static class CreatedUserData {
 
         public static String generateUniqueBodyCreatedUser() {
 
-            lastEmail = faker.internet().emailAddress();
-            lastPassword = faker.internet().password();
-            lastName = faker.name().firstName();
+            email = faker.internet().emailAddress();
+            password = faker.internet().password();
+            name = faker.name().firstName();
 
             return String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
-                    lastEmail, lastPassword, lastName);
+                    email, password, name);
         }
 
         public static String generateBodyWithoutEmailCreatedUser() {
 
-            lastPassword = faker.internet().password();
-            lastName = faker.name().firstName();
+            password = faker.internet().password();
+            name = faker.name().firstName();
 
             return String.format("{\"password\":\"%s\",\"name\":\"%s\"}",
-                    lastPassword, lastName);
+                    password, name);
         }
 
         public static String generateBodyWithoutPasswordCreatedUser() {
 
-            lastEmail = faker.internet().emailAddress();
-            lastName = faker.name().firstName();
+            email = faker.internet().emailAddress();
+            name = faker.name().firstName();
 
             return String.format("{\"email\":\"%s\",\"name\":\"%s\"}",
-                    lastEmail, lastName);
+                    email, name);
         }
 
         public static String generateBodyWithoutNameCreatedUser() {
 
-            lastEmail = faker.internet().emailAddress();
-            lastPassword = faker.internet().password();
+            email = faker.internet().emailAddress();
+            password = faker.internet().password();
 
             return String.format("{\"email\":\"%s\",\"password\":\"%s\"}",
-                    lastEmail, lastPassword);
+                    email, password);
         }
+
+        public static String generateUserWithCustomPassword(String password) {
+
+            email = faker.internet().emailAddress();
+            name = faker.name().firstName();
+
+            return String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
+                    email, password, name);
+        }
+
+
 
     }
 
@@ -78,20 +89,46 @@ public class UserTestData {
 
         }
 
+        public static String generateCustomBody(String email, String password , String name ) {
+
+            return String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
+                    email, password, name);
+        }
+
     }
 
 
-    public static class Getters {
-        public static String getLastEmail() {
-            return lastEmail;
+
+    public static class UpdateData {
+
+        public static String generateEmailUpdate() {
+            email = faker.internet().emailAddress();
+            return String.format("{\"email\":\"%s\"}",
+                    email);
         }
 
-        public static String getLastPassword() {
-            return lastPassword;
+        public static String generateNameUpdate() {
+            name = faker.name().firstName();
+            return String.format("{\"name\":\"%s\"}",
+                    name);
         }
 
-        public static String getLastName() {
-            return lastName;
+        public static String generatePasswordUpdate() {
+            password = faker.internet().password();
+            return String.format("{\"password\":\"%s\"}",
+                    password);
+        }
+
+        public static String PasswordUpdate(String password) {
+            return String.format("{\"password\":\"%s\"}",
+                    password);
+        }
+
+        public static String generateFullUpdateCustomPassword(String password) {
+            email = faker.internet().emailAddress();
+            name = faker.name().firstName();
+            return String.format("{\"email\":\"%s\",\"name\":\"%s\",\"password\":\"%s\"}",
+                    email, name, password);
         }
     }
 }

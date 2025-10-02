@@ -3,14 +3,13 @@ package steps;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import testData.UserTestData;
 
 import static io.restassured.RestAssured.given;
 
-public class LogoutUserSteps {
+public class LoginSteps {
 
-    @Step("Авторизация пользователем")
-    public Response UserAuthorizationSuccessful(String body) {
+    @Step("Логин пользователем")
+    public Response UserLogoutSuccessful(String body) {
         return given()
                 .contentType(ContentType.JSON)
                 .body(body)
@@ -21,5 +20,6 @@ public class LogoutUserSteps {
                 .log().all() // логируем ответ
                 .extract()
                 .response();
+
     }
 }

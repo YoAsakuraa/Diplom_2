@@ -16,6 +16,7 @@ import testData.UserTestData;
 import java.util.stream.Stream;
 
 public class CreatingUserTest {
+
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
 
@@ -80,7 +81,7 @@ public class CreatingUserTest {
 
     @ParameterizedTest
     @MethodSource("userDataProvider")
-    @Description("Создание заказа с различными данными")
+    @Description("Создание пользователя с различными данными")
     public void createOrderWithDifferentData(String email, String password, String name , Integer statusCode , Boolean expectation) {
         String body = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
                 email, password, name);
