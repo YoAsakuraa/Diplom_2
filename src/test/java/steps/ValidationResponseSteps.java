@@ -3,7 +3,6 @@ package steps;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class ValidationResponseSteps {
@@ -90,5 +89,12 @@ public class ValidationResponseSteps {
                 .body("success", equalTo(false))
                 .body("message", equalTo("You should be authorised"));
         System.out.println("Ошибка обновления пользователя , отсутствует авторизация ");
+    }
+
+    @Step("Проверка создания заказа ")
+    public void validateCreateOrderError(Response response) {
+        response.then().statusCode(not(200))
+                .body("success", equalTo(false));
+
     }
 }
