@@ -14,7 +14,7 @@ import testData.UserTestData;
 
 public class LoginTest {
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
-    LoginSteps logoutUserSteps = new LoginSteps();
+    LoginSteps loginSteps = new LoginSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
 
     static {
@@ -46,7 +46,7 @@ public class LoginTest {
         Response response = creatingUserSteps.createUserSuccessful(bodyCreated);
         validationResponseSteps.verifyUserCreatedSuccessfully(response);
 
-        Response responseAuthorization = logoutUserSteps.UserLogoutSuccessful(bodyAuthorization);
+        Response responseAuthorization = loginSteps.UserLogoutSuccessful(bodyAuthorization);
         validationResponseSteps.validateSuccessResponse(responseAuthorization);
     }
 }

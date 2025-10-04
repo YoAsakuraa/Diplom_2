@@ -104,21 +104,21 @@ public class CreatingUserTest {
                 // Комбинация 1: Все поля
                 Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName(), 200, true),
 
-                // Комбинация 2: Без email
+                // Комбинация 2: Значение Email null
                 Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName(), 200, false),
 
-                // Комбинация 3: Без password
+                // Комбинация 3: Значение password null
                 Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(), 200, false),
 
-                // Комбинация 4: Без name
+                // Комбинация 4: Значение name null
                 Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(), 200, false),
 
-                // Комбинация 5: Только email
+                // Комбинация 5: Только email  (значение password и name null)
                 Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.getNull(), 200, false),
 
-                // Комбинация 6: Только password
+                // Комбинация 6: Только password  (значение email и name null)
                 Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(), 200, false),
-                // Комбинация 6: Только name
+                // Комбинация 6: Только name     (значение email и name password)
                 Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(), 200, false)
         );
     }
