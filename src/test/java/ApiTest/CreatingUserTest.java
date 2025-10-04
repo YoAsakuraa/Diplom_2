@@ -1,10 +1,11 @@
 package ApiTest;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,9 +21,12 @@ public class CreatingUserTest {
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
 
+    static {
+        RestAssured.filters(new AllureRestAssured());
+    }
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
 
         RestAssured.baseURI = "https://stellarburgers.nomoreparties.site";
         RestAssured.config = RestAssured.config()
@@ -31,43 +35,19 @@ public class CreatingUserTest {
                         .setParam("http.socket.timeout", 10000)
                 );
     }
-
-    static Stream<Arguments> userDataProvider() {
-        return Stream.of(
-                // Комбинация 1: Все поля
-                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName() , 200 , true),
-
-                // Комбинация 2: Без email
-                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName(),   200 , false),
-
-                // Комбинация 3: Без password
-                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(),   200 , false),
-
-                // Комбинация 4: Без name
-                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(),   200 , false),
-
-                // Комбинация 5: Только email
-                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.getNull(),   200 , false),
-
-                // Комбинация 6: Только password
-                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(),  200 , false),
-                // Комбинация 6: Только name
-                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(),   200, false)
-        );
-    }
-
+    /**
+     * ПРИМЕЧАНИЕ: В документации API отсутствует описание формата успешного ответа.
+     * Проверяем статус 201 (Created) и наличие флага "success": true,
+     * исходя из:
+     * 1. Стандартного поведения REST API при создании сущности
+     * 2. Ожиданий бизнес-логики приложения
+     * 3. Анализа фактических ответов сервера в различных сценариях
+     */
     @Test
     @Description("Успешное создание пользователя")
     public void createdUser() {
         Response response = creatingUserSteps.createUserSuccessful();
-         /**
-         * ПРИМЕЧАНИЕ: В документации API отсутствует описание формата успешного ответа.
-         * Проверяем статус 201 (Created) и наличие флага "success": true,
-         * исходя из:
-         * 1. Стандартного поведения REST API при создании сущности
-         * 2. Ожиданий бизнес-логики приложения
-         * 3. Анализа фактических ответов сервера в различных сценариях
-         */
+
         validationResponseSteps.verifyUserCreatedSuccessfully(response);
 
     }
@@ -82,12 +62,12 @@ public class CreatingUserTest {
     @ParameterizedTest
     @MethodSource("userDataProvider")
     @Description("Создание пользователя с различными данными")
-    public void createOrderWithDifferentData(String email, String password, String name , Integer statusCode , Boolean expectation) {
+    public void createOrderWithDifferentData(String email, String password, String name, Integer statusCode, Boolean expectation) {
         String body = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"name\":\"%s\"}",
                 email, password, name);
 
         Response response = creatingUserSteps.createUserSuccessful(body);
-        validationResponseSteps.verifyCreateUser(response, statusCode , expectation);
+        validationResponseSteps.verifyCreateUser(response, statusCode, expectation);
 
     }
 
@@ -116,6 +96,31 @@ public class CreatingUserTest {
         Response response = creatingUserSteps.createUserSuccessful(body);
         validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
 
+    }
+
+
+    static Stream<Arguments> userDataProvider() {
+        return Stream.of(
+                // Комбинация 1: Все поля
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName(), 200, true),
+
+                // Комбинация 2: Без email
+                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.generateUniqueName(), 200, false),
+
+                // Комбинация 3: Без password
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(), 200, false),
+
+                // Комбинация 4: Без name
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(), 200, false),
+
+                // Комбинация 5: Только email
+                Arguments.of(UserTestData.Utils.generateUniqueEmail(), UserTestData.Utils.getNull(), UserTestData.Utils.getNull(), 200, false),
+
+                // Комбинация 6: Только password
+                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.generateUniquePassword(), UserTestData.Utils.getNull(), 200, false),
+                // Комбинация 6: Только name
+                Arguments.of(UserTestData.Utils.getNull(), UserTestData.Utils.getNull(), UserTestData.Utils.generateUniqueName(), 200, false)
+        );
     }
 
 }

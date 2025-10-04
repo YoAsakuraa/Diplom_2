@@ -31,6 +31,7 @@ public class OrderTestData {
         CREAM_SAUCE("61c0c5a71d1f82001bdaaa73", "Соус фирменный Space Sauce"),
         TRADITIONAL_SAUCE("61c0c5a71d1f82001bdaaa74", "Соус традиционный галактический"),
         ANOTHER_SAUCE("61c0c5a71d1f82001bdaaa75", "Другой соус"),
+        CUSTOM_SAUCE("61c0c5a71d1f82001bdaaaaa", "Несуществующий соус"),
 
         // Начинки
         BEEF("61c0c5a71d1f82001bdaaa6f", "Говяжий метеорит"),

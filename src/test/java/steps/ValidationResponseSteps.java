@@ -94,7 +94,22 @@ public class ValidationResponseSteps {
     @Step("Проверка создания заказа ")
     public void validateCreateOrderError(Response response) {
         response.then().statusCode(not(200))
-                .body("success", equalTo(false));
+                .body("id", equalTo(false));
+
+    }
+    @Step("Проверка получения заказа ")
+    public void validateReceivingOrder(Response response ,String idValue) {
+        response.then().statusCode(200)
+                .body("orders[0]._id", equalTo(idValue));
+
+        System.out.println("Список заказов получен ");
+    }
+
+    @Step("Проверка получения списка заказов не авторизированным пользователем ")
+    public void validateReceivingOrderNotAuthorization(Response response ) {
+        response.then().statusCode(401)
+                .body("success", equalTo(false))
+                .body("message", equalTo("You should be authorised"));
 
     }
 }

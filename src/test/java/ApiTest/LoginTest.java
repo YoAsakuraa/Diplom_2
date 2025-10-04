@@ -1,10 +1,11 @@
 package ApiTest;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import steps.CreatingUserSteps;
 import steps.LoginSteps;
@@ -16,8 +17,13 @@ public class LoginTest {
     LoginSteps logoutUserSteps = new LoginSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
 
-    @BeforeEach
-    public void setUp() {
+    static {
+        RestAssured.filters(new AllureRestAssured());
+    }
+
+
+    @BeforeAll
+    public static void setUp() {
 
         RestAssured.baseURI = "https://stellarburgers.nomoreparties.site";
         RestAssured.config = RestAssured.config()
@@ -30,17 +36,17 @@ public class LoginTest {
     @Test
     @Description("Успешный логин пользователем")
     public void loginUser() {
-       String email = UserTestData.Utils.generateUniqueEmail();
-       String password = UserTestData.Utils.generateUniquePassword();
-       String name = UserTestData.Utils.generateUniqueName();
+        String email = UserTestData.Utils.generateUniqueEmail();
+        String password = UserTestData.Utils.generateUniquePassword();
+        String name = UserTestData.Utils.generateUniqueName();
 
-        String bodyCreated = UserTestData.Utils.generateCustomBody(email,password,name);
-        String bodyAuthorization = UserTestData.Utils.generateCustomBody(email,password,name);
+        String bodyCreated = UserTestData.Utils.generateCustomBody(email, password, name);
+        String bodyAuthorization = UserTestData.Utils.generateCustomBody(email, password, name);
 
-       Response response = creatingUserSteps.createUserSuccessful(bodyCreated);
-       validationResponseSteps.verifyUserCreatedSuccessfully(response);
+        Response response = creatingUserSteps.createUserSuccessful(bodyCreated);
+        validationResponseSteps.verifyUserCreatedSuccessfully(response);
 
-       Response responseAuthorization = logoutUserSteps.UserLogoutSuccessful(bodyAuthorization);
-       validationResponseSteps.validateSuccessResponse(responseAuthorization);
+        Response responseAuthorization = logoutUserSteps.UserLogoutSuccessful(bodyAuthorization);
+        validationResponseSteps.validateSuccessResponse(responseAuthorization);
     }
 }
