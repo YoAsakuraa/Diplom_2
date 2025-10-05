@@ -4,12 +4,14 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import steps.CreatingOrderSteps;
 import steps.CreatingUserSteps;
+import steps.DeleteSteps;
 import steps.ValidationResponseSteps;
 import testData.OrderTestData;
 
@@ -20,6 +22,8 @@ public class CreatedOrderTest {
     CreatingOrderSteps creatingOrderSteps = new CreatingOrderSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
+    DeleteSteps deleteSteps = new DeleteSteps();
+    String token ;
 
     static {
         RestAssured.filters(new AllureRestAssured());
@@ -31,6 +35,10 @@ public class CreatedOrderTest {
         RestAssured.baseURI = "https://stellarburgers.nomoreparties.site";
         RestAssured.config = RestAssured.config().httpClient(HttpClientConfig.httpClientConfig().setParam("http.connection.timeout", 10000).setParam("http.socket.timeout", 10000));
     }
+    @AfterEach
+    public void DeleteUser() {
+        deleteSteps.deleteUser(token);
+    }
 
 
     @ParameterizedTest
@@ -39,7 +47,7 @@ public class CreatedOrderTest {
 
         Response userResponse = creatingUserSteps.createUserSuccessful();
         validationResponseSteps.verifyUserCreatedSuccessfully(userResponse);
-        String token = userResponse.jsonPath().getString("accessToken");
+        token = userResponse.jsonPath().getString("accessToken");
 
         String body = OrderTestData.createOrderWithIngredients(ingredients);
 
@@ -62,7 +70,7 @@ public class CreatedOrderTest {
     public void createOrderNegativeCombinations(List<OrderTestData.Ingredient> ingredients) {
         Response userResponse = creatingUserSteps.createUserSuccessful();
         validationResponseSteps.verifyUserCreatedSuccessfully(userResponse);
-        String token = userResponse.jsonPath().getString("accessToken");
+        token = userResponse.jsonPath().getString("accessToken");
 
         String body = OrderTestData.createOrderWithIngredients(ingredients);
 

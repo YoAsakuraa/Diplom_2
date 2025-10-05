@@ -3,12 +3,10 @@ package ApiTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import steps.CreatingOrderSteps;
-import steps.CreatingUserSteps;
-import steps.ReceivingUserOrderSteps;
-import steps.ValidationResponseSteps;
+import steps.*;
 import testData.OrderTestData;
 
 import java.util.List;
@@ -18,6 +16,8 @@ public class ReceivingUserOrderTest {
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
     ReceivingUserOrderSteps receivingUserOrderSteps = new ReceivingUserOrderSteps();
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
+    DeleteSteps deleteSteps = new DeleteSteps();
+    String token;
 
 
     @BeforeAll
@@ -28,6 +28,11 @@ public class ReceivingUserOrderTest {
                         .setParam("http.connection.timeout", 10000)
                         .setParam("http.socket.timeout", 10000)
                 );
+    }
+
+    @AfterEach
+    public void DeleteUser() {
+        deleteSteps.deleteUser(token);
     }
 
     @Test
@@ -41,7 +46,7 @@ public class ReceivingUserOrderTest {
 
         Response userResponse = creatingUserSteps.createUserSuccessful();
         validationResponseSteps.verifyUserCreatedSuccessfully(userResponse);
-        String token = userResponse.jsonPath().getString("accessToken");
+        token = userResponse.jsonPath().getString("accessToken");
 
         String body = OrderTestData.createOrderWithIngredients(ingredients);
         Response orderResponse = creatingOrderSteps.creatingOrderAuthorization(body, token);
@@ -67,7 +72,7 @@ public class ReceivingUserOrderTest {
 
         Response userResponse = creatingUserSteps.createUserSuccessful();
         validationResponseSteps.verifyUserCreatedSuccessfully(userResponse);
-        String token = userResponse.jsonPath().getString("accessToken");
+        token = userResponse.jsonPath().getString("accessToken");
 
         String body = OrderTestData.createOrderWithIngredients(ingredients);
         Response orderResponse = creatingOrderSteps.creatingOrderAuthorization(body, token);

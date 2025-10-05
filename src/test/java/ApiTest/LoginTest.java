@@ -5,9 +5,11 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import steps.CreatingUserSteps;
+import steps.DeleteSteps;
 import steps.LoginSteps;
 import steps.ValidationResponseSteps;
 import testData.UserTestData;
@@ -16,6 +18,8 @@ public class LoginTest {
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
     LoginSteps loginSteps = new LoginSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
+    DeleteSteps deleteSteps = new DeleteSteps();
+    String token;
 
     static {
         RestAssured.filters(new AllureRestAssured());
@@ -33,6 +37,11 @@ public class LoginTest {
                 );
     }
 
+    @AfterEach
+    public void DeleteUser() {
+        deleteSteps.deleteUser(token);
+    }
+
     @Test
     @Description("Успешный логин пользователем")
     public void loginUser() {
@@ -48,5 +57,7 @@ public class LoginTest {
 
         Response responseAuthorization = loginSteps.UserLogoutSuccessful(bodyAuthorization);
         validationResponseSteps.validateSuccessResponse(responseAuthorization);
+
+        token = response.jsonPath().getString("accessToken");
     }
 }

@@ -5,12 +5,14 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import steps.CreatingUserSteps;
+import steps.DeleteSteps;
 import steps.ValidationResponseSteps;
 import testData.UserTestData;
 
@@ -20,6 +22,8 @@ public class CreatingUserTest {
 
     CreatingUserSteps creatingUserSteps = new CreatingUserSteps();
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
+    DeleteSteps deleteSteps = new DeleteSteps();
+    String token;
 
     static {
         RestAssured.filters(new AllureRestAssured());
@@ -35,6 +39,12 @@ public class CreatingUserTest {
                         .setParam("http.socket.timeout", 10000)
                 );
     }
+
+    @AfterEach
+    public void DeleteUser() {
+        deleteSteps.deleteUser(token);
+    }
+
     /**
      * ПРИМЕЧАНИЕ: В документации API отсутствует описание формата успешного ответа.
      * Проверяем статус 201 (Created) и наличие флага "success": true,
@@ -47,8 +57,9 @@ public class CreatingUserTest {
     @Description("Успешное создание пользователя")
     public void createdUser() {
         Response response = creatingUserSteps.createUserSuccessful();
-
+        token = response.jsonPath().getString("accessToken");
         validationResponseSteps.verifyUserCreatedSuccessfully(response);
+
 
     }
 
@@ -56,7 +67,9 @@ public class CreatingUserTest {
     @Description("Создание уже зарегистрированного пользователя")
     public void createdDuplicationUser() {
         Response response = creatingUserSteps.createDuplicateUser();
+        token = response.jsonPath().getString("accessToken");
         validationResponseSteps.verifyThatCreatingDuplicateUserFails(response);
+
     }
 
     @ParameterizedTest
@@ -67,6 +80,7 @@ public class CreatingUserTest {
                 email, password, name);
 
         Response response = creatingUserSteps.createUserSuccessful(body);
+        token = response.jsonPath().getString("accessToken");
         validationResponseSteps.verifyCreateUser(response, statusCode, expectation);
 
     }
@@ -76,7 +90,9 @@ public class CreatingUserTest {
     public void createdUserWithoutEmail() {
         String body = UserTestData.CreatedUserData.generateBodyWithoutEmailCreatedUser();
         Response response = creatingUserSteps.createUserSuccessful(body);
+        token = response.jsonPath().getString("accessToken");
         validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
+
 
     }
 
@@ -85,6 +101,7 @@ public class CreatingUserTest {
     public void createdUserWithoutPassword() {
         String body = UserTestData.CreatedUserData.generateBodyWithoutPasswordCreatedUser();
         Response response = creatingUserSteps.createUserSuccessful(body);
+        token = response.jsonPath().getString("accessToken");
         validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
 
     }
@@ -94,7 +111,9 @@ public class CreatingUserTest {
     public void createdUserWithoutName() {
         String body = UserTestData.CreatedUserData.generateBodyWithoutNameCreatedUser();
         Response response = creatingUserSteps.createUserSuccessful(body);
+        token = response.jsonPath().getString("accessToken");
         validationResponseSteps.verifyUserCreationWithoutRequiredFieldsFails(response);
+
 
     }
 

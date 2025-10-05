@@ -4,6 +4,7 @@ import io.qameta.allure.Description;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import steps.*;
@@ -15,6 +16,8 @@ public class UpdateDateUserTest {
     ValidationResponseSteps validationResponseSteps = new ValidationResponseSteps();
     UpdatingUserSteps updatingUserSteps = new UpdatingUserSteps();
     LoginSteps logoutUserSteps = new LoginSteps();
+    DeleteSteps deleteSteps = new DeleteSteps();
+    String token;
 
     @BeforeAll
     public static void setUp() {
@@ -27,6 +30,12 @@ public class UpdateDateUserTest {
                 );
     }
 
+    @AfterEach
+    public void DeleteUser() {
+        deleteSteps.deleteUser(token);
+    }
+
+
     @Test
     @Description("Полное обновление данных пользователя и проверка доступности")
     public void UpdatingEmailAndNameUserSuccessfully() {
@@ -36,7 +45,7 @@ public class UpdateDateUserTest {
         validationResponseSteps.verifyUserCreatedSuccessfully(response);
 
         //Сохраняем токен и тело после создания
-        String token = response.jsonPath().getString("accessToken");
+        token = response.jsonPath().getString("accessToken");
         String oldEmail = response.jsonPath().getString("user.email");
         String oldName = response.jsonPath().getString("user.name");
         String oldPassword = "Test15";
@@ -72,7 +81,7 @@ public class UpdateDateUserTest {
         Response response = creatingUserSteps.createUserSuccessful();
         validationResponseSteps.verifyUserCreatedSuccessfully(response);
         //Сохраняем токен после создания
-        String token = response.jsonPath().getString("accessToken");
+        token = response.jsonPath().getString("accessToken");
         String oldEmail = response.jsonPath().getString("user.email");
 
         //Меняем данные (используем токен для авторизации)
@@ -89,7 +98,7 @@ public class UpdateDateUserTest {
         Response response = creatingUserSteps.createUserSuccessful();
         validationResponseSteps.verifyUserCreatedSuccessfully(response);
         //Сохраняем токен после создания
-        String token = response.jsonPath().getString("accessToken");
+        token = response.jsonPath().getString("accessToken");
         String oldName = response.jsonPath().getString("user.name");
 
 
@@ -110,7 +119,7 @@ public class UpdateDateUserTest {
         validationResponseSteps.verifyUserCreatedSuccessfully(response);
 
         //Сохраняем токен и тело после создания
-        String token = response.jsonPath().getString("accessToken");
+        token = response.jsonPath().getString("accessToken");
         String oldEmail = response.jsonPath().getString("user.email");
         String oldName = response.jsonPath().getString("user.name");
         String newPassword = UserTestData.Utils.generateUniquePassword();
@@ -148,6 +157,8 @@ public class UpdateDateUserTest {
         Response updateResponse = updatingUserSteps.updateDateUser(body);
         validationResponseSteps.validateDataNotAuthorization(updateResponse);
 
+        token = response.jsonPath().getString("accessToken");
+
     }
 
     @Test
@@ -162,6 +173,8 @@ public class UpdateDateUserTest {
         Response updateResponse = updatingUserSteps.updateDateUser(body);
         validationResponseSteps.validateDataNotAuthorization(updateResponse);
 
+        token = response.jsonPath().getString("accessToken");
+
     }
 
     @Test
@@ -175,6 +188,8 @@ public class UpdateDateUserTest {
         String body = UserTestData.UpdateData.generatePasswordUpdate();
         Response updateResponse = updatingUserSteps.updateDateUser(body);
         validationResponseSteps.validateDataNotAuthorization(updateResponse);
+
+        token = response.jsonPath().getString("accessToken");
 
     }
 
