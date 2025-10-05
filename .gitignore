@@ -1,0 +1,32 @@
+# Allure
+.allure/
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Maven
+target/
+!target/allure-results/
+!target/allure-results/**/*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temp files
+*.tmp
+*.temp
+
+# System
+.classpath
+.project
+.settings/
+bin/
+build/
